@@ -37,7 +37,7 @@ final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
       "dx": delta?.dx ?? 0,
       "dy": delta?.dy ?? 0,
     };
-    channel.sink.add(jsonEncode(message)); // Use jsonEncode for proper JSON formatting
+    channel.sink.add(jsonEncode(message)); 
   }
 
   @override
