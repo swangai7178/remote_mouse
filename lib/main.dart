@@ -24,7 +24,7 @@ class MouseControlPage extends StatefulWidget {
 }
 
 class _MouseControlPageState extends State<MouseControlPage> {
-  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3001'));
+  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
  // Change to your PC's IP
 
   Offset? lastPosition;
