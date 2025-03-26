@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -24,8 +26,8 @@ class MouseControlPage extends StatefulWidget {
 }
 
 class _MouseControlPageState extends State<MouseControlPage> {
-  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
- // Change to your PC's IP
+final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000')); 
+// Ensure this IP is correct and accessible
 
   Offset? lastPosition;
 
@@ -35,7 +37,7 @@ class _MouseControlPageState extends State<MouseControlPage> {
       "dx": delta?.dx ?? 0,
       "dy": delta?.dy ?? 0,
     };
-    channel.sink.add(message.toString());
+    channel.sink.add(jsonEncode(message)); // Use jsonEncode for proper JSON formatting
   }
 
   @override
