@@ -1,75 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MouseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MouseApp extends StatelessWidget {
+  const MouseApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-       
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MouseControlPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  
-  final String title;
+class MouseControlPage extends StatefulWidget {
+  const MouseControlPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MouseControlPageState createState() => _MouseControlPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MouseControlPageState extends State<MouseControlPage> {
+  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.100:3000')); // Change to your PC's IP
 
-  void _incrementCounter() {
-    setState(() {
-    
-      _counter++;
-    });
+  Offset? lastPosition;
+
+  void _sendMessage(String action, {Offset? delta}) {
+    final message = {
+      "action": action,
+      "dx": delta?.dx ?? 0,
+      "dy": delta?.dy ?? 0,
+    };
+    channel.sink.add(message.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-   
     return Scaffold(
-      appBar: AppBar(
-        
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        
-        title: Text(widget.title),
-      ),
-      body: Center(
-       
-        child: Column(
-        
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onPanStart: (details) {
+          lastPosition = details.localPosition;
+        },
+        onPanUpdate: (details) {
+          if (lastPosition != null) {
+            final delta = details.localPosition - lastPosition!;
+            _sendMessage("move", delta: delta);
+            lastPosition = details.localPosition;
+          }
+        },
+        onTap: () => _sendMessage("click"),
+        child: Center(
+          child: Text("Swipe to move, tap to click", style: TextStyle(color: Colors.white)),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
     );
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
   }
 }
