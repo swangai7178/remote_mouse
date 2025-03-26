@@ -26,18 +26,20 @@ class MouseControlPage extends StatefulWidget {
 }
 
 class _MouseControlPageState extends State<MouseControlPage> {
-final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000')); 
-// Ensure this IP is correct and accessible
-
+  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
   Offset? lastPosition;
 
   void _sendMessage(String action, {Offset? delta}) {
-    final message = {
-      "action": action,
-      "dx": delta?.dx ?? 0,
-      "dy": delta?.dy ?? 0,
-    };
-    channel.sink.add(jsonEncode(message)); 
+    try {
+      final message = {
+        "action": action,
+        "dx": delta?.dx ?? 0,
+        "dy": delta?.dy ?? 0,
+      };
+      channel.sink.add(jsonEncode(message));
+    } catch (e) {
+      debugPrint("Error sending message: $e");
+    }
   }
 
   @override
@@ -55,9 +57,16 @@ final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
             lastPosition = details.localPosition;
           }
         },
+        onPanEnd: (_) {
+          lastPosition = null; // Reset position on pan end
+        },
         onTap: () => _sendMessage("click"),
         child: Center(
-          child: Text("Swipe to move, tap to click", style: TextStyle(color: Colors.white)),
+          child: Text(
+            "Swipe to move, tap to click",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
