@@ -26,7 +26,17 @@ class MouseControlPage extends StatefulWidget {
 }
 
 class _MouseControlPageState extends State<MouseControlPage> {
-  final channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
+  late final WebSocketChannel channel;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      channel = WebSocketChannel.connect(Uri.parse('ws://192.168.1.4:3000'));
+    } catch (e) {
+      debugPrint("Error connecting to WebSocket: $e");
+    }
+  }
   Offset? lastPosition;
 
   void _sendMessage(String action, {Offset? delta}) {
@@ -64,7 +74,11 @@ class _MouseControlPageState extends State<MouseControlPage> {
         child: Center(
           child: Text(
             "Swipe to move, tap to click",
-            style: TextStyle(color: Colors.white, fontSize: 18),
+    try {
+      channel.sink.close();
+    } catch (e) {
+      debugPrint("Error closing WebSocket: $e");
+    }
             textAlign: TextAlign.center,
           ),
         ),
