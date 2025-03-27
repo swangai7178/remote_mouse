@@ -4,7 +4,7 @@ import pyautogui
 import json
 
 async def mouse_control(websocket, path):  # Ensure 'path' is included
-    print("Function called from mouse_server.py") #debug line
+    print("Function called from mouse_server.py") 
     async for message in websocket:
         try:
             print("Received message:", message) #debug line
@@ -20,7 +20,7 @@ async def mouse_control(websocket, path):  # Ensure 'path' is included
 
 async def main():
     async with websockets.serve(mouse_control, "0.0.0.0", 3000):
-        print("WebSocket server started on ws://0.0.0.0:3000 (mouse_server.py)")
+        print("WebSocket server started on ws://0.0.0.0:3001 (mouse_server.py)")
         await asyncio.Future()
 
 if __name__ == "__main__":
