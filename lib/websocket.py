@@ -2,7 +2,6 @@ import asyncio
 import websockets
 import pyautogui
 import json
-
 async def mouse_control(websocket, path):  # Ensure 'path' is included
     print("Function called from mouse_server.py") 
     async for message in websocket:
